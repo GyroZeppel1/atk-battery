@@ -119,7 +119,10 @@ mod tests {
 
     #[test]
     fn status_one_is_asleep_not_a_battery_value() {
-        assert!(matches!(parse(&reply(1, 100, 0), true), Err(QueryError::Asleep)));
+        assert!(matches!(
+            parse(&reply(1, 100, 0), true),
+            Err(QueryError::Asleep)
+        ));
     }
 
     #[test]

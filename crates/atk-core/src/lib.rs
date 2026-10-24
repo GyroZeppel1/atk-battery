@@ -148,7 +148,10 @@ pub fn scan(opts: &ScanOptions) -> Vec<DeviceReading> {
 
         let (name, link) = match known {
             Some(m) => (m.name.to_string(), m.link),
-            None => (format!("ATK family {:04X}:{:04X}", c.vid, c.pid), model::Link::Unknown),
+            None => (
+                format!("ATK family {:04X}:{:04X}", c.vid, c.pid),
+                model::Link::Unknown,
+            ),
         };
 
         let result = query(&c, family);
@@ -168,7 +171,7 @@ pub fn scan(opts: &ScanOptions) -> Vec<DeviceReading> {
 }
 
 fn query(col: &hid::Collection, family: Family) -> Result<Reading, QueryError> {
-    let ep = hid::Endpoint::open(&col.path, true).map_err(|e| QueryError::from_io(e))?;
+    let ep = hid::Endpoint::open(&col.path, true).map_err(QueryError::from_io)?;
     let in_len = col.input_len as usize;
 
     match family {

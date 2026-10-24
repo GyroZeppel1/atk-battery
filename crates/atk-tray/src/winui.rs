@@ -3,7 +3,12 @@
 //! Same policy as `atk-core`: hand-written declarations, no GUI framework, no
 //! third-party crate. Only the calls this UI makes are bound.
 
-#![allow(non_snake_case, non_camel_case_types, dead_code)]
+#![allow(
+    non_snake_case,
+    non_camel_case_types,
+    dead_code,
+    clippy::upper_case_acronyms
+)]
 
 use atk_core::win::{wide, BOOL, DWORD, GUID, HANDLE, WCHAR};
 use std::ffi::c_void;
@@ -190,13 +195,23 @@ extern "system" {
     pub fn DestroyWindow(hWnd: HANDLE) -> BOOL;
     pub fn ShowWindow(hWnd: HANDLE, nCmdShow: i32) -> BOOL;
     pub fn UpdateWindow(hWnd: HANDLE) -> BOOL;
-    pub fn GetMessageW(lpMsg: *mut MSG, hWnd: HANDLE, wMsgFilterMin: u32, wMsgFilterMax: u32) -> BOOL;
+    pub fn GetMessageW(
+        lpMsg: *mut MSG,
+        hWnd: HANDLE,
+        wMsgFilterMin: u32,
+        wMsgFilterMax: u32,
+    ) -> BOOL;
     pub fn TranslateMessage(lpMsg: *const MSG) -> BOOL;
     pub fn DispatchMessageW(lpMsg: *const MSG) -> isize;
     pub fn PostQuitMessage(nExitCode: i32);
     pub fn PostMessageW(hWnd: HANDLE, Msg: u32, wParam: usize, lParam: isize) -> BOOL;
     pub fn SendMessageW(hWnd: HANDLE, Msg: u32, wParam: usize, lParam: isize) -> isize;
-    pub fn SetTimer(hWnd: HANDLE, nIDEvent: usize, uElapse: u32, lpTimerFunc: *const c_void) -> usize;
+    pub fn SetTimer(
+        hWnd: HANDLE,
+        nIDEvent: usize,
+        uElapse: u32,
+        lpTimerFunc: *const c_void,
+    ) -> usize;
     pub fn KillTimer(hWnd: HANDLE, uIDEvent: usize) -> BOOL;
     pub fn InvalidateRect(hWnd: HANDLE, lpRect: *const RECT, bErase: BOOL) -> BOOL;
     pub fn BeginPaint(hWnd: HANDLE, lpPaint: *mut PAINTSTRUCT) -> HANDLE;
@@ -207,7 +222,12 @@ extern "system" {
     pub fn SetForegroundWindow(hWnd: HANDLE) -> BOOL;
     pub fn GetCursorPos(lpPoint: *mut POINT) -> BOOL;
     pub fn CreatePopupMenu() -> HANDLE;
-    pub fn AppendMenuW(hMenu: HANDLE, uFlags: u32, uIDNewItem: usize, lpNewItem: *const WCHAR) -> BOOL;
+    pub fn AppendMenuW(
+        hMenu: HANDLE,
+        uFlags: u32,
+        uIDNewItem: usize,
+        lpNewItem: *const WCHAR,
+    ) -> BOOL;
     pub fn TrackPopupMenu(
         hMenu: HANDLE,
         uFlags: u32,
@@ -229,7 +249,13 @@ extern "system" {
         uFlags: u32,
     ) -> BOOL;
     pub fn FillRect(hDC: HANDLE, lprc: *const RECT, hbr: HANDLE) -> i32;
-    pub fn DrawTextW(hdc: HANDLE, lpchText: *const WCHAR, cchText: i32, lprc: *mut RECT, format: u32) -> i32;
+    pub fn DrawTextW(
+        hdc: HANDLE,
+        lpchText: *const WCHAR,
+        cchText: i32,
+        lprc: *mut RECT,
+        format: u32,
+    ) -> i32;
     pub fn CreateIconIndirect(piconinfo: *const ICONINFO) -> HANDLE;
     pub fn DestroyIcon(hIcon: HANDLE) -> BOOL;
     pub fn GetDC(hWnd: HANDLE) -> HANDLE;
@@ -238,7 +264,12 @@ extern "system" {
     pub fn MessageBeep(uType: u32) -> BOOL;
     pub fn IsWindowVisible(hWnd: HANDLE) -> BOOL;
     pub fn FindWindowW(lpClassName: *const WCHAR, lpWindowName: *const WCHAR) -> HANDLE;
-    pub fn MessageBoxW(hWnd: HANDLE, lpText: *const WCHAR, lpCaption: *const WCHAR, uType: u32) -> i32;
+    pub fn MessageBoxW(
+        hWnd: HANDLE,
+        lpText: *const WCHAR,
+        lpCaption: *const WCHAR,
+        uType: u32,
+    ) -> i32;
 }
 
 pub const MB_ICONERROR: u32 = 0x0000_0010;
@@ -281,7 +312,13 @@ extern "system" {
         hSection: HANDLE,
         offset: u32,
     ) -> HANDLE;
-    pub fn CreateBitmap(nWidth: i32, nHeight: i32, nPlanes: u32, nBitCount: u32, lpBits: *const c_void) -> HANDLE;
+    pub fn CreateBitmap(
+        nWidth: i32,
+        nHeight: i32,
+        nPlanes: u32,
+        nBitCount: u32,
+        lpBits: *const c_void,
+    ) -> HANDLE;
     pub fn GetStockObject(i: i32) -> HANDLE;
 }
 
@@ -309,7 +346,11 @@ pub struct SYSTEMTIME {
 #[link(name = "kernel32")]
 extern "system" {
     pub fn GetModuleHandleW(lpModuleName: *const WCHAR) -> HANDLE;
-    pub fn CreateMutexW(lpMutexAttributes: *const c_void, bInitialOwner: BOOL, lpName: *const WCHAR) -> HANDLE;
+    pub fn CreateMutexW(
+        lpMutexAttributes: *const c_void,
+        bInitialOwner: BOOL,
+        lpName: *const WCHAR,
+    ) -> HANDLE;
     pub fn GetLastError() -> u32;
     pub fn SetLastError(dwErrCode: u32);
     pub fn GetLocalTime(lpSystemTime: *mut SYSTEMTIME);
@@ -333,9 +374,54 @@ impl Fonts {
     pub fn new() -> Self {
         unsafe {
             Self {
-                big: CreateFontW(-52, 0, 0, 0, FW_BOLD, 0, 0, 0, DEFAULT_CHARSET, 0, 0, CLEARTYPE_QUALITY, 0, wide("Segoe UI").as_ptr()),
-                mid: CreateFontW(-17, 0, 0, 0, 400, 0, 0, 0, DEFAULT_CHARSET, 0, 0, CLEARTYPE_QUALITY, 0, wide("Microsoft YaHei UI").as_ptr()),
-                small: CreateFontW(-13, 0, 0, 0, 400, 0, 0, 0, DEFAULT_CHARSET, 0, 0, CLEARTYPE_QUALITY, 0, wide("Microsoft YaHei UI").as_ptr()),
+                big: CreateFontW(
+                    -52,
+                    0,
+                    0,
+                    0,
+                    FW_BOLD,
+                    0,
+                    0,
+                    0,
+                    DEFAULT_CHARSET,
+                    0,
+                    0,
+                    CLEARTYPE_QUALITY,
+                    0,
+                    wide("Segoe UI").as_ptr(),
+                ),
+                mid: CreateFontW(
+                    -17,
+                    0,
+                    0,
+                    0,
+                    400,
+                    0,
+                    0,
+                    0,
+                    DEFAULT_CHARSET,
+                    0,
+                    0,
+                    CLEARTYPE_QUALITY,
+                    0,
+                    wide("Microsoft YaHei UI").as_ptr(),
+                ),
+                small: CreateFontW(
+                    -13,
+                    0,
+                    0,
+                    0,
+                    400,
+                    0,
+                    0,
+                    0,
+                    DEFAULT_CHARSET,
+                    0,
+                    0,
+                    CLEARTYPE_QUALITY,
+                    0,
+                    wide("Microsoft YaHei UI").as_ptr(),
+                ),
             }
         }
     }

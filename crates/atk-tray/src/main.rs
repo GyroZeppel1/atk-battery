@@ -55,7 +55,11 @@ fn log(msg: &str) {
         return;
     }
     let path = std::env::temp_dir().join("atk-tray.log");
-    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+    if let Ok(mut f) = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+    {
         let _ = writeln!(f, "{}", msg);
     }
 }
@@ -134,7 +138,10 @@ impl App {
             self.tray_icon = i;
             let nid = make_nid(self.hwnd, i, "ATK 电量 · 读取中");
             let ok = Shell_NotifyIconW(NIM_ADD, &nid);
-            log(&format!("add_tray icon={:?} shell={} cbSize={}", i, ok, nid.cbSize));
+            log(&format!(
+                "add_tray icon={:?} shell={} cbSize={}",
+                i, ok, nid.cbSize
+            ));
             self.tray_added = true;
         }
     }
@@ -158,7 +165,10 @@ impl App {
         unsafe {
             let (new_icon, tip) = match info {
                 Some((pct, charging, tip)) => (icon::make_icon(pct, charging), tip),
-                None => (icon::make_idle_icon(), "ATK 电量 · 未检测到设备".to_string()),
+                None => (
+                    icon::make_idle_icon(),
+                    "ATK 电量 · 未检测到设备".to_string(),
+                ),
             };
             if new_icon.is_null() {
                 return;
@@ -174,7 +184,10 @@ impl App {
                 self.tray_added = true;
                 Shell_NotifyIconW(NIM_ADD, &nid)
             };
-            log(&format!("refresh_tray icon={:?} shell={} tip={}", new_icon, ok, tip));
+            log(&format!(
+                "refresh_tray icon={:?} shell={} tip={}",
+                new_icon, ok, tip
+            ));
         }
     }
 
@@ -215,15 +228,30 @@ impl App {
             } else {
                 0
             };
-            AppendMenuW(menu, MF_STRING | auto, ID_STARTUP, wide("开机自启").as_ptr());
+            AppendMenuW(
+                menu,
+                MF_STRING | auto,
+                ID_STARTUP,
+                wide("开机自启").as_ptr(),
+            );
             let show = if self.settings.show_panel {
                 MF_CHECKED
             } else {
                 0
             };
-            AppendMenuW(menu, MF_STRING | show, ID_SHOW_PANEL, wide("启动时打开面板").as_ptr());
+            AppendMenuW(
+                menu,
+                MF_STRING | show,
+                ID_SHOW_PANEL,
+                wide("启动时打开面板").as_ptr(),
+            );
             AppendMenuW(menu, MF_SEPARATOR, 0, ptr::null());
-            AppendMenuW(menu, MF_STRING, ID_DESKTOP, wide("创建桌面快捷方式").as_ptr());
+            AppendMenuW(
+                menu,
+                MF_STRING,
+                ID_DESKTOP,
+                wide("创建桌面快捷方式").as_ptr(),
+            );
             AppendMenuW(menu, MF_SEPARATOR, 0, ptr::null());
             AppendMenuW(menu, MF_STRING, ID_QUIT, wide("退出").as_ptr());
 
@@ -259,8 +287,14 @@ unsafe extern "system" fn wndproc(hwnd: HANDLE, msg: u32, wp: usize, lp: isize) 
             let mut rc: RECT = std::mem::zeroed();
             GetClientRect(hwnd, &mut rc);
             let a = &*APP;
-            let rows = { let g = a.rows.lock().unwrap(); (*g).clone() };
-            let updated = { let g = a.updated.lock().unwrap(); (*g).clone() };
+            let rows = {
+                let g = a.rows.lock().unwrap();
+                (*g).clone()
+            };
+            let updated = {
+                let g = a.updated.lock().unwrap();
+                (*g).clone()
+            };
             paint::paint(hdc, &rows, &a.fonts, &updated, rc.right, rc.bottom);
             EndPaint(hwnd, &ps);
             0
@@ -304,7 +338,8 @@ unsafe extern "system" fn wndproc(hwnd: HANDLE, msg: u32, wp: usize, lp: isize) 
                 }
                 ID_DESKTOP => {
                     if let Some(p) = atk_core::startup::desktop_lnk_path() {
-                        if let Err(e) = atk_core::startup::create_shortcut(&p, "", "ATK 鼠标电量") {
+                        if let Err(e) = atk_core::startup::create_shortcut(&p, "", "ATK 鼠标电量")
+                        {
                             let text = wide(&format!("创建桌面快捷方式失败：{e}"));
                             let cap = wide("ATK 电量");
                             MessageBoxW(hwnd, text.as_ptr(), cap.as_ptr(), MB_ICONERROR);

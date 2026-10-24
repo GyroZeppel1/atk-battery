@@ -125,7 +125,12 @@ fn build(percent: u8, color: u32, idle: bool) -> HANDLE {
         let mask = CreateBitmap(SIZE, SIZE, 1, 1, ptr::null());
         let mdc = CreateCompatibleDC(screen);
         let old_mask = SelectObject(mdc, mask);
-        let full = RECT { left: 0, top: 0, right: SIZE, bottom: SIZE };
+        let full = RECT {
+            left: 0,
+            top: 0,
+            right: SIZE,
+            bottom: SIZE,
+        };
         let black = CreateSolidBrush(rgb(0, 0, 0));
         FillRect(mdc, &full, black);
         DeleteObject(black);

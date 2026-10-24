@@ -1,4 +1,5 @@
 /target
+/atk-tray.exe
 *.bmp
 *.log
 *.tmp

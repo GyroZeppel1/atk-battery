@@ -46,13 +46,8 @@ pub fn enumerate() -> Vec<Collection> {
         loop {
             let mut did: SP_DEVICE_INTERFACE_DATA = std::mem::zeroed();
             did.cbSize = std::mem::size_of::<SP_DEVICE_INTERFACE_DATA>() as u32;
-            if SetupDiEnumDeviceInterfaces(
-                hdev,
-                ptr::null(),
-                &GUID_DEVINTERFACE_HID,
-                idx,
-                &mut did,
-            ) == 0
+            if SetupDiEnumDeviceInterfaces(hdev, ptr::null(), &GUID_DEVINTERFACE_HID, idx, &mut did)
+                == 0
             {
                 break;
             }
@@ -74,7 +69,11 @@ unsafe fn inspect(hdev: HANDLE, did: &mut SP_DEVICE_INTERFACE_DATA) -> Option<Co
     }
 
     let mut buf = vec![0u8; need as usize];
-    let struct_size: u32 = if std::mem::size_of::<usize>() == 8 { 8 } else { 6 };
+    let struct_size: u32 = if std::mem::size_of::<usize>() == 8 {
+        8
+    } else {
+        6
+    };
     *(buf.as_mut_ptr() as *mut u32) = struct_size;
     let ok = SetupDiGetDeviceInterfaceDetailW(
         hdev,
@@ -155,7 +154,11 @@ pub struct Endpoint {
 impl Endpoint {
     pub fn open(path: &str, write: bool) -> std::io::Result<Self> {
         let w = wide(path);
-        let access = if write { GENERIC_READ | GENERIC_WRITE } else { 0 };
+        let access = if write {
+            GENERIC_READ | GENERIC_WRITE
+        } else {
+            0
+        };
         unsafe {
             let h = CreateFileW(
                 w.as_ptr(),
@@ -175,7 +178,10 @@ impl Endpoint {
                 CloseHandle(h);
                 return Err(e);
             }
-            Ok(Self { handle: h, event: ev })
+            Ok(Self {
+                handle: h,
+                event: ev,
+            })
         }
     }
 

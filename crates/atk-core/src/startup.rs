@@ -205,7 +205,11 @@ unsafe fn create_lnk(path: &Path, args: &str, desc: &str) -> Result<(), String> 
                 if initialized {
                     CoUninitialize();
                 }
-                return Err(format!("SetIconLocation 0x{:08X} ({})", hr as u32, ico.display()));
+                return Err(format!(
+                    "SetIconLocation 0x{:08X} ({})",
+                    hr as u32,
+                    ico.display()
+                ));
             }
         }
     }

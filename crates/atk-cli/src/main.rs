@@ -62,8 +62,9 @@ fn parse_args() -> Result<Args, String> {
             "--vid" => {
                 i += 1;
                 let v = argv.get(i).ok_or("--vid needs a hex value")?;
-                let id = u16::from_str_radix(v.trim_start_matches("0x").trim_start_matches("0X"), 16)
-                    .map_err(|_| format!("bad vendor id: {v}"))?;
+                let id =
+                    u16::from_str_radix(v.trim_start_matches("0x").trim_start_matches("0X"), 16)
+                        .map_err(|_| format!("bad vendor id: {v}"))?;
                 a.vids.get_or_insert_with(Vec::new).push(id);
             }
             "-h" | "--help" => {
@@ -177,8 +178,15 @@ fn dump_collections() {
     for c in atk_core::hid::enumerate() {
         println!(
             "{:04X}:{:04X}  {:04X}:{:04X}  {:>6X}  {:>4} {:>4} {:>4}  {}",
-            c.vid, c.pid, c.usage_page, c.usage, c.version, c.input_len, c.output_len,
-            c.feature_len, c.path
+            c.vid,
+            c.pid,
+            c.usage_page,
+            c.usage,
+            c.version,
+            c.input_len,
+            c.output_len,
+            c.feature_len,
+            c.path
         );
     }
 }
@@ -275,7 +283,10 @@ fn main() {
     }
 
     let opts = ScanOptions {
-        vids: args.vids.clone().unwrap_or_else(|| atk_core::ATK_VIDS.to_vec()),
+        vids: args
+            .vids
+            .clone()
+            .unwrap_or_else(|| atk_core::ATK_VIDS.to_vec()),
         strict: args.strict,
     };
 
@@ -291,7 +302,9 @@ fn main() {
         }
         let any = run_once(&opts, &args);
         if !any && !args.json {
-            println!("\nTip: a sleeping mouse answers nothing. Move it and wait for the next poll.");
+            println!(
+                "\nTip: a sleeping mouse answers nothing. Move it and wait for the next poll."
+            );
         }
         std::thread::sleep(Duration::from_secs(args.interval));
     }

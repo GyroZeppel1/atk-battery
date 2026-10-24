@@ -2,6 +2,12 @@
 
 ATK / VXE / VGN 2.4G 鼠标的电量托盘工具。单文件，不需要安装，不联网，不写日志。
 
+## 下载
+
+从 [Releases](https://github.com/GyroZeppel1/atk-battery/releases) 取 `atk-tray.exe`，放到任意目录双击即可。仓库里只有源码，构建产物不进版本库。
+
+也可以自己编译，见文末。
+
 ## 用法
 
 双击桌面上的「ATK 电量」（或 `atk-tray.exe`），弹出面板：
