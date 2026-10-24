@@ -1,0 +1,12 @@
+[package]
+name = "atk-tray"
+version = "0.1.0"
+edition = "2021"
+description = "Tray and panel UI for ATK 2.4G mice battery"
+
+[dependencies]
+atk-core = { path = "../atk-core" }
+
+[[bin]]
+name = "atk-tray"
+path = "src/main.rs"

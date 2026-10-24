@@ -1,0 +1,12 @@
+[package]
+name = "atk-battery"
+version = "0.1.0"
+edition = "2021"
+description = "Command line battery viewer for ATK / VXE 2.4G mice"
+
+[dependencies]
+atk-core = { path = "../atk-core" }
+
+[[bin]]
+name = "atk-battery"
+path = "src/main.rs"
