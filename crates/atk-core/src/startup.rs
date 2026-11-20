@@ -141,7 +141,18 @@ pub fn create_shortcut(path: &Path, args: &str, desc: &str) -> Result<(), String
     if let Some(dir) = path.parent() {
         std::fs::create_dir_all(dir).map_err(|e| format!("create dir: {e}"))?;
     }
-    unsafe { create_lnk(path, args, desc) }
+    // IPersistFile::Save is refused with E_ACCESSDENIED when the destination is
+    // the Desktop on locked-down machines (the shell's own save path is subject
+    // to extra policy that a plain CreateFile is not). Build the .lnk in TEMP
+    // and copy it into place, which goes through the normal file API.
+    let tmp = std::env::temp_dir().join("atk-battery-shortcut.tmp.lnk");
+    let _ = std::fs::remove_file(&tmp);
+    unsafe {
+        create_lnk(&tmp, args, desc)?;
+    }
+    std::fs::copy(&tmp, path).map_err(|e| format!("copy shortcut: {e}"))?;
+    let _ = std::fs::remove_file(&tmp);
+    Ok(())
 }
 
 pub fn set_enabled(enable: bool) -> Result<PathBuf, String> {
